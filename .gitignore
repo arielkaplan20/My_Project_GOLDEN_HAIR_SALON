@@ -1,0 +1,21 @@
+# Dependencies & builds
+node_modules/
+dist/
+build/
+
+# Environment / secrets (the example file is kept)
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
