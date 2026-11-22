@@ -21,8 +21,11 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import { getUser } from "./auth";
 
-function Protected({ children }) {
-  return getUser() ? children : <Navigate to="/login" />;
+function Protected({ children, roles }) {
+  const user = getUser();
+  if (!user) return <Navigate to="/login" />;
+  if (roles && !roles.includes(user.role)) return <Navigate to="/" />;
+  return children;
 }
 
 export default function App() {
@@ -37,15 +40,15 @@ export default function App() {
       <Route path="/my" element={<Protected><MyAppointments /></Protected>} />
       <Route path="/change" element={<Protected><ChangeAppointment /></Protected>} />
       <Route path="/cancel" element={<Protected><CancelAppointment /></Protected>} />
-      <Route path="/diary" element={<Protected><Diary /></Protected>} />
-      <Route path="/work-hours" element={<Protected><WorkHours /></Protected>} />
+      <Route path="/diary" element={<Protected roles={["barber", "admin"]}><Diary /></Protected>} />
+      <Route path="/work-hours" element={<Protected roles={["barber", "admin"]}><WorkHours /></Protected>} />
       <Route path="/profile" element={<Protected><Profile /></Protected>} />
       <Route path="/shop" element={<Protected><Shop /></Protected>} />
       <Route path="/cart" element={<Protected><Cart /></Protected>} />
       <Route path="/checkout" element={<Protected><Checkout /></Protected>} />
-      <Route path="/manage-users" element={<Protected><ManageUsers /></Protected>} />
-      <Route path="/manage-appointments" element={<Protected><ManageAppointments /></Protected>} />
-      <Route path="/manage-shop" element={<Protected><ManageShop /></Protected>} />
+      <Route path="/manage-users" element={<Protected roles={["admin"]}><ManageUsers /></Protected>} />
+      <Route path="/manage-appointments" element={<Protected roles={["admin"]}><ManageAppointments /></Protected>} />
+      <Route path="/manage-shop" element={<Protected roles={["admin"]}><ManageShop /></Protected>} />
       <Route path="/my-orders" element={<Protected><MyOrders /></Protected>} />
       <Route path="/product/:id" element={<Protected><ProductPage /></Protected>} />
       <Route path="*" element={<Navigate to="/" />} />
