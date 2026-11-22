@@ -103,7 +103,7 @@ async function updateMySchedule(req, res) {
 
     const clean = week.map((d) => ({
       day: d.day,
-      active: Boolean(d.active),
+      active: d.day === 6 ? false : Boolean(d.active),
       startHour: d.startHour || "09:00",
       endHour: d.endHour || "19:00"
     }));

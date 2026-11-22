@@ -123,7 +123,7 @@ export default function WorkHours() {
             </tr>
           </thead>
           <tbody>
-            {week.map((d) => (
+            {week.filter((d) => d.day !== 6).map((d) => (
               <tr key={d.day} className="border-t">
                 <td className="p-2">{DAYS[d.day]}</td>
                 <td className="p-2">
