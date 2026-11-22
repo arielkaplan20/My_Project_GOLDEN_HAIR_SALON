@@ -1,4 +1,3 @@
-// SUC-12: ניהול החנות וההזמנות
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
@@ -11,18 +10,28 @@ export default function ManageShop() {
   const [orders, setOrders] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [form, setForm] = useState(EMPTY);
-  const [editId, setEditId] = useState(null);     // null = הוספת מוצר חדש
-  const [pending, setPending] = useState(null);   // הפעולה שממתינה לאישור
+  const [editId, setEditId] = useState(null);
+  const [pending, setPending] = useState(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [productSearch, setProductSearch] = useState("");
+  const [orderSearch, setOrderSearch] = useState("");
   const navigate = useNavigate();
 
-  // צעד 2: שליפת רשימת המוצרים וכלל ההזמנות
   function loadAll() {
     api.get("/shop/products").then((res) => setProducts(res.data));
     api.get("/shop/orders").then((res) => { setOrders(res.data); setLoaded(true); });
   }
   useEffect(loadAll, []);
+
+  const shownProducts = products.filter((p) =>
+    p.name.toLowerCase().includes(productSearch.trim().toLowerCase())
+  );
+
+  const shownOrders = orders.filter((o) =>
+    o.orderNumber.includes(orderSearch.trim()) ||
+    o.clientName.toLowerCase().includes(orderSearch.trim().toLowerCase())
+  );
 
   function change(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -39,14 +48,12 @@ export default function ManageShop() {
     setForm(EMPTY);
   }
 
-  // צעד 4: שליחת הטופס פותחת את חלון האישור
   function submit(e) {
     e.preventDefault();
     setMessage(""); setError("");
     setPending({ type: editId ? "update" : "add" });
   }
 
-  // צעדים 7-8: אישור השינוי, עדכון מסד הנתונים והודעת אישור
   async function confirm() {
     try {
       let res;
@@ -61,7 +68,6 @@ export default function ManageShop() {
       cancelEdit();
       loadAll();
     } catch (err) {
-      // הסתעפות ב': הפרטים שהוזנו אינם תקינים
       setError(err.response?.data?.message || "שגיאה בעדכון החנות");
     }
     setPending(null);
@@ -77,7 +83,6 @@ export default function ManageShop() {
       {message && <div className="bg-green-100 text-green-700 p-2 rounded mb-3">{message}</div>}
       {error && <div className="bg-red-100 text-red-700 p-2 rounded mb-3">{error}</div>}
 
-      {/* צעדים 3-4: הוספת מוצר חדש או עדכון מוצר קיים */}
       <div className="bg-white p-6 rounded shadow max-w-lg mb-8">
         <h2 className="font-bold mb-3">{editId ? "עדכון מוצר" : "הוספת מוצר חדש"}</h2>
         <form onSubmit={submit}>
@@ -102,6 +107,12 @@ export default function ManageShop() {
       </div>
 
       <h2 className="font-bold mb-3">מוצרי החנות</h2>
+      <input type="text" placeholder="חיפוש מוצר לפי שם"
+             value={productSearch} onChange={(e) => setProductSearch(e.target.value)}
+             className="border rounded p-2 mb-3 w-full max-w-sm" />
+      {products.length > 0 && shownProducts.length === 0 && (
+        <p className="text-gray-600 mb-3">לא נמצאו מוצרים מתאימים</p>
+      )}
       <table className="bg-white rounded shadow w-full text-right mb-8">
         <thead>
           <tr className="bg-yellow-100">
@@ -112,7 +123,7 @@ export default function ManageShop() {
           </tr>
         </thead>
         <tbody>
-          {products.map((p) => (
+          {shownProducts.map((p) => (
             <tr key={p._id} className="border-t">
               <td className="p-2">{p.name}</td>
               <td className="p-2">{p.price} ש"ח</td>
@@ -129,10 +140,16 @@ export default function ManageShop() {
       </table>
 
       <h2 className="font-bold mb-3">הזמנות</h2>
-      {/* הסתעפות א': לא קיימות הזמנות במערכת */}
       {loaded && orders.length === 0 ? (
         <div className="bg-yellow-100 text-yellow-800 p-3 rounded">אין הזמנות קיימות במערכת</div>
       ) : (
+        <>
+        <input type="text" placeholder="חיפוש לפי מספר הזמנה או שם לקוח"
+               value={orderSearch} onChange={(e) => setOrderSearch(e.target.value)}
+               className="border rounded p-2 mb-3 w-full max-w-sm" />
+        {orders.length > 0 && shownOrders.length === 0 && (
+          <p className="text-gray-600 mb-3">לא נמצאו הזמנות מתאימות</p>
+        )}
         <table className="bg-white rounded shadow w-full text-right">
           <thead>
             <tr className="bg-yellow-100">
@@ -144,7 +161,7 @@ export default function ManageShop() {
             </tr>
           </thead>
           <tbody>
-            {orders.map((o) => (
+            {shownOrders.map((o) => (
               <tr key={o.id} className="border-t">
                 <td className="p-2">{o.orderNumber}</td>
                 <td className="p-2">{o.clientName}</td>
@@ -155,9 +172,9 @@ export default function ManageShop() {
             ))}
           </tbody>
         </table>
+        </>
       )}
 
-      {/* צעדים 6-7: חלון אישור השינוי. הסתעפות ג': לחיצה על "לא" מסיימת ללא שינוי */}
       {pending && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
           <div className="bg-white p-6 rounded shadow max-w-sm text-center">

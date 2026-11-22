@@ -1,4 +1,3 @@
-// SUC-10: ניהול משתמשים והרשאות
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
@@ -7,18 +6,25 @@ const ROLES = { client: "לקוח", barber: "ספר", admin: "מנהל ראשי"
 
 export default function ManageUsers() {
   const [users, setUsers] = useState([]);
-  const [pending, setPending] = useState(null);   // השינוי שממתין לאישור
+  const [pending, setPending] = useState(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
   const navigate = useNavigate();
 
-  // צעד 2: שליפת רשימת המשתמשים
   function loadUsers() {
     api.get("/admin/users").then((res) => setUsers(res.data));
   }
   useEffect(loadUsers, []);
 
-  // צעדים 6-7: עדכון ההרשאה והודעת אישור
+  const shown = users
+    .filter((u) =>
+      u.name.toLowerCase().includes(search.trim().toLowerCase()) ||
+      u.email.toLowerCase().includes(search.trim().toLowerCase())
+    )
+    .filter((u) => roleFilter === "all" || u.role === roleFilter);
+
   async function confirm() {
     setMessage(""); setError("");
     try {
@@ -42,7 +48,21 @@ export default function ManageUsers() {
       {message && <div className="bg-green-100 text-green-700 p-2 rounded mb-3">{message}</div>}
       {error && <div className="bg-red-100 text-red-700 p-2 rounded mb-3">{error}</div>}
 
-      {/* צעד 3: בחירת משתמש ועדכון הרשאה */}
+      <div className="bg-white p-4 rounded shadow mb-4 flex flex-wrap gap-3 items-center">
+        <input type="text" placeholder="חיפוש לפי שם או דוא&quot;ל"
+               value={search} onChange={(e) => setSearch(e.target.value)}
+               className="border rounded p-2 flex-1 min-w-[180px]" />
+
+        <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} className="border rounded p-2">
+          <option value="all">כל ההרשאות</option>
+          {Object.keys(ROLES).map((r) => <option key={r} value={r}>{ROLES[r]}</option>)}
+        </select>
+      </div>
+
+      {users.length > 0 && shown.length === 0 && (
+        <p className="text-gray-600 mb-3">לא נמצאו משתמשים מתאימים</p>
+      )}
+
       <table className="bg-white rounded shadow w-full text-right">
         <thead>
           <tr className="bg-yellow-100">
@@ -53,7 +73,7 @@ export default function ManageUsers() {
           </tr>
         </thead>
         <tbody>
-          {users.map((u) => (
+          {shown.map((u) => (
             <tr key={u.id} className="border-t">
               <td className="p-2">{u.name}</td>
               <td className="p-2">{u.email}</td>
@@ -70,7 +90,6 @@ export default function ManageUsers() {
         </tbody>
       </table>
 
-      {/* צעדים 4-5: חלון אישור. הסתעפות א': לחיצה על "לא" מסיימת ללא שינוי */}
       {pending && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
           <div className="bg-white p-6 rounded shadow max-w-sm text-center">

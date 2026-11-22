@@ -1,7 +1,5 @@
-// בדיקת טוקן והרשאות - לפי SUC-2 (מעבר לממשק המותאם להרשאה)
 const jwt = require("jsonwebtoken");
 
-// מוודא שהמשתמש מחובר
 function auth(req, res, next) {
   const header = req.headers.authorization || "";
   const token = header.startsWith("Bearer ") ? header.slice(7) : null;
@@ -9,14 +7,13 @@ function auth(req, res, next) {
     return res.status(401).json({ message: "נדרשת התחברות" });
   }
   try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET); // { id, role }
+    req.user = jwt.verify(token, process.env.JWT_SECRET);
     next();
   } catch (err) {
     return res.status(401).json({ message: "ההתחברות פגה, יש להתחבר מחדש" });
   }
 }
 
-// מוודא שלמשתמש יש את ההרשאה המתאימה
 function requireRole(...roles) {
   return (req, res, next) => {
     if (!req.user || !roles.includes(req.user.role)) {

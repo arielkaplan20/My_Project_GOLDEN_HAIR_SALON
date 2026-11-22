@@ -1,4 +1,3 @@
-// מחלקת Product: מוצר בחנות האפליקציה
 const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema({

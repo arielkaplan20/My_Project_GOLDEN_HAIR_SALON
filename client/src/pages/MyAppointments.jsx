@@ -1,4 +1,3 @@
-// SUC-4: צפייה בתורים קיימים
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
@@ -8,7 +7,6 @@ export default function MyAppointments() {
   const [loaded, setLoaded] = useState(false);
   const navigate = useNavigate();
 
-  // צעד 2: המערכת שולפת את התורים העתידיים של הלקוח
   useEffect(() => {
     api.get("/appointments/my").then((res) => {
       setList(res.data);
@@ -23,12 +21,10 @@ export default function MyAppointments() {
       </button>
       <h1 className="text-2xl font-bold mb-6">התורים שלי</h1>
 
-      {/* הסתעפות א': לא קיימים תורים עבור הלקוח */}
       {loaded && list.length === 0 && (
         <div className="bg-yellow-100 text-yellow-800 p-3 rounded max-w-lg">אין תורים קיימים</div>
       )}
 
-      {/* צעד 3: הצגת פירוט התורים הקיימים */}
       <div className="grid gap-3 max-w-lg">
         {list.map((a) => (
           <div key={a.id} className="bg-white p-4 rounded shadow">

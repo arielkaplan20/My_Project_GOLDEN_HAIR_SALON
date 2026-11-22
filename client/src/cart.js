@@ -1,4 +1,3 @@
-// סל הקניות נשמר בדפדפן עד לסיום ההזמנה
 export function getCart() {
   const data = localStorage.getItem("cart");
   return data ? JSON.parse(data) : [];
@@ -8,7 +7,6 @@ export function saveCart(cart) {
   localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-// הוספת מוצר לסל. אם הוא כבר בסל, רק מגדילים את הכמות
 export function addToCart(product, quantity) {
   const cart = getCart();
   const line = cart.find((c) => c.productId === product._id);

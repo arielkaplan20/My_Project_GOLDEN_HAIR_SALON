@@ -1,4 +1,3 @@
-// SUC-8: עדכון פרופיל אישי
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
@@ -14,7 +13,6 @@ export default function Profile() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // צעד 2: שליפת הפרטים האישיים הקיימים
   useEffect(() => {
     api.get("/auth/me").then((res) => {
       const u = res.data;
@@ -30,13 +28,12 @@ export default function Profile() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  // צעדים 3-6: שמירת העדכון, בדיקת תקינות בשרת והודעת אישור
   async function save(e) {
     e.preventDefault();
     setMessage(""); setError("");
     try {
       const res = await api.put("/auth/me", form);
-      saveUser(res.data.user);        // כדי שהשם בדף הבית יתעדכן מיד
+      saveUser(res.data.user);
       setForm({ ...form, password: "", confirmPassword: "" });
       setMessage(res.data.message);
     } catch (err) {

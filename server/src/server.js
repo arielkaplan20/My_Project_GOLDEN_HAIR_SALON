@@ -1,4 +1,3 @@
-// GOLDEN HAIR SALON - קובץ ההפעלה הראשי של השרת
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
@@ -6,17 +5,15 @@ const connectDB = require("./config/db");
 
 const app = express();
 
-app.use(cors());            // מאפשר לצד הלקוח (React) לפנות לשרת
-app.use(express.json());    // קורא גוף בקשה בפורמט JSON
+app.use(cors());
+app.use(express.json());
 
-// נתיבי המערכת
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/appointments", require("./routes/appointmentRoutes"));
 app.use("/api/schedule", require("./routes/scheduleRoutes"));
 app.use("/api/shop", require("./routes/shopRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
 
-// בדיקה שהשרת חי
 app.get("/", (req, res) => {
   res.json({ message: "GOLDEN HAIR SALON server is running" });
 });

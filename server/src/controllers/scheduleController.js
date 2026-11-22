@@ -1,16 +1,13 @@
-// רכיב Schedule Manager - יומן התורים של נותן השירות, סדר העבודה השבועי ושינויים לתאריכים מסוימים (SUC-9)
 const Appointment = require("../models/Appointment");
 const ServiceProvider = require("../models/ServiceProvider");
 const { todayString } = require("../utils/dates");
 const { weeklyOf, hoursForDate } = require("../utils/workSchedule");
 const { calcFreeSlots } = require("./appointmentController");
 
-// מאתר את רשומת נותן השירות של המשתמש המחובר
 async function findMe(userId) {
   return await ServiceProvider.findOne({ userId });
 }
 
-// צעדים 2-3: שליפת התורים שנקבעו לנותן השירות המחובר בלבד
 async function getDiary(req, res) {
   try {
     const me = await findMe(req.user.id);
@@ -31,7 +28,6 @@ async function getDiary(req, res) {
   }
 }
 
-// צעד 5: סדר העבודה השבועי והשינויים לתאריכים שעוד לא עברו
 async function getMySchedule(req, res) {
   const me = await findMe(req.user.id);
   if (!me) return res.status(404).json({ message: "לא נמצאה רשומת נותן שירות" });
@@ -46,13 +42,11 @@ async function getMySchedule(req, res) {
   });
 }
 
-// הופך "09:30" למספר דקות, לצורך בדיקת תקינות השעות
 function toMinutes(t) {
   const [h, m] = t.split(":").map(Number);
   return h * 60 + m;
 }
 
-// הסתעפות ד': שעות חסרות, בפורמט שגוי, או שעת סיום שאינה מאוחרת משעת ההתחלה
 function hoursError(startHour, endHour) {
   const format = /^([01]\d|2[0-3]):[0-5]\d$/;
   if (!startHour || !endHour) return "יש למלא שעת התחלה ושעת סיום";
@@ -61,8 +55,6 @@ function hoursError(startHour, endHour) {
   return null;
 }
 
-// הסתעפות ה': תורים שכבר נקבעו ושלא יתאימו לסדר העבודה המוצע - הספר לא עובד
-// באותו יום, או שהשעה כבר אינה אחד התורים ביום. candidate הוא סדר העבודה אחרי השינוי
 function findConflicts(candidate, appointments) {
   return appointments.filter((a) => {
     const hours = hoursForDate(candidate, a.date);
@@ -70,14 +62,12 @@ function findConflicts(candidate, appointments) {
   });
 }
 
-// התורים העתידיים של הספר, שאיתם בודקים התנגשות
 async function futureAppointments(me) {
   return await Appointment.find({ barberId: me._id, status: "booked", date: { $gte: todayString() } })
     .populate("clientId", "firstName lastName")
     .sort({ date: 1, time: 1 });
 }
 
-// חוסמים את השמירה ומחזירים את רשימת התורים המתנגשים
 function conflictResponse(res, conflicts) {
   return res.status(409).json({
     message: "לא ניתן לשמור: יש תורים שכבר נקבעו מחוץ לשעות החדשות. " +
@@ -90,7 +80,6 @@ function conflictResponse(res, conflicts) {
   });
 }
 
-// צעדים 6-8: שמירת סדר העבודה השבועי אחרי בדיקת השעות וההתנגשויות
 async function updateMySchedule(req, res) {
   try {
     const { weeklySchedule } = req.body;
@@ -123,7 +112,7 @@ async function updateMySchedule(req, res) {
     if (conflicts.length > 0) return conflictResponse(res, conflicts);
 
     me.weeklySchedule = clean;
-    me.workDays = undefined;   // מחיקת המבנה הקודם, אם נשאר ברשומה
+    me.workDays = undefined;
     me.startHour = undefined;
     me.endHour = undefined;
     await me.save();
@@ -133,7 +122,6 @@ async function updateMySchedule(req, res) {
   }
 }
 
-// הסתעפות ג': שינוי לתאריך מסוים - יום חופש, או שעות אחרות לאותו יום בלבד
 async function saveException(req, res) {
   try {
     const { date, off, startHour, endHour } = req.body;
@@ -166,7 +154,6 @@ async function saveException(req, res) {
   }
 }
 
-// מחיקת שינוי לתאריך: היום חוזר לשעות של הסדר השבועי
 async function deleteException(req, res) {
   try {
     const { date } = req.params;

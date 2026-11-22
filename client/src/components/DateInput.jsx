@@ -1,9 +1,5 @@
-// שדה תאריך. בשדה תאריך רגיל הדפדפן מציג את התבנית לפי השפה שלו, ובדפדפן בעברית יוצא
-// "dd/מ״מ/YYYY". לכן התאריך מוצג כאן כטקסט ("15/10/2026", או "יום/חודש/שנה" כשהשדה ריק),
-// ולחיצה על השדה פותחת את לוח השנה של הדפדפן. הערך עצמו נשאר "YYYY-MM-DD" כמו בשדה רגיל.
 import { useRef } from "react";
 
-// "2026-10-15" -> "15/10/2026"
 function show(value) {
   const [y, m, d] = value.split("-");
   return d + "/" + m + "/" + y;
@@ -16,7 +12,7 @@ export default function DateInput({ value, onChange, name, min, max, className =
     try {
       picker.current.showPicker();
     } catch {
-      picker.current.focus();   // דפדפן ישן בלי showPicker
+      picker.current.focus();
     }
   }
 
@@ -37,7 +33,6 @@ export default function DateInput({ value, onChange, name, min, max, className =
         <rect x="3" y="5" width="18" height="16" rx="2" />
         <path d="M3 10h18M8 3v4M16 3v4" />
       </svg>
-      {/* השדה של הדפדפן: מוסתר, ומשמש רק ללוח השנה ולשמירת הערך */}
       <input ref={picker} type="date" name={name} value={value} min={min} max={max} onChange={onChange}
              tabIndex={-1} aria-hidden="true" className="absolute inset-0 opacity-0 pointer-events-none" />
     </div>

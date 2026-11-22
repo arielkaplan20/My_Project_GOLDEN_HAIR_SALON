@@ -1,11 +1,8 @@
-// בדיקות יחידה לסדר העבודה של הספר (SUC-9): סדר שבועי, שינויים לתאריכים
-// ובדיקת התנגשות עם תורים שכבר נקבעו. נבדק במנותק מהשרת וממסד הנתונים.
 const test = require("node:test");
 const assert = require("node:assert");
 const { weeklyOf, hoursForDate } = require("../src/utils/workSchedule");
 const { findConflicts } = require("../src/controllers/scheduleController");
 
-// ראשון עד חמישי 09:00-19:00, שישי 08:00-13:00, שבת חופש
 const week = [0, 1, 2, 3, 4, 5, 6].map((day) => ({
   day,
   active: day !== 6,
@@ -14,7 +11,6 @@ const week = [0, 1, 2, 3, 4, 5, 6].map((day) => ({
 }));
 const barber = { weeklySchedule: week, exceptions: [], slotMinutes: 30 };
 
-// 2026-10-04 הוא יום ראשון, 2026-10-09 יום שישי, 2026-10-10 שבת
 test("יום עבודה רגיל מקבל את השעות של אותו יום בסדר השבועי", () => {
   assert.deepStrictEqual(hoursForDate(barber, "2026-10-04"), { startHour: "09:00", endHour: "19:00", slotMinutes: 30 });
   assert.deepStrictEqual(hoursForDate(barber, "2026-10-09"), { startHour: "08:00", endHour: "13:00", slotMinutes: 30 });
@@ -65,7 +61,7 @@ test("קיצור שעות היום מחזיר רק את התורים שמחוץ 
   const appts = [{ date: "2026-10-09", time: "08:00" }, { date: "2026-10-09", time: "12:30" }];
   const shorter = week.map((d) => (d.day === 5 ? { ...d, endHour: "12:00" } : d));
   const sp = { ...barber, weeklySchedule: shorter };
-  assert.deepStrictEqual(findConflicts(sp, appts), [appts[1]]);   // 12:30 כבר מחוץ לשעות
+  assert.deepStrictEqual(findConflicts(sp, appts), [appts[1]]);
 });
 
 test("ביטול יום עבודה בסדר השבועי מחזיר את כל התורים של אותו יום", () => {

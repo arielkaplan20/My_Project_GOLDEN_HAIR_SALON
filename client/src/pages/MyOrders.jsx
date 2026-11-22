@@ -1,4 +1,3 @@
-// דרישה 22: צפייה בהזמנות קודמות וביצוע הזמנה חוזרת
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
@@ -18,7 +17,6 @@ export default function MyOrders() {
     });
   }, []);
 
-  // הזמנה חוזרת: המוצרים של ההזמנה הקודמת נכנסים לסל והלקוח עובר לסל
   function reorder(order) {
     saveCart(order.items.map((i) => ({
       productId: i.productId, name: i.name, price: i.price, quantity: i.quantity

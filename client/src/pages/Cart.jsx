@@ -1,4 +1,3 @@
-// SUC-7 צעד 2: הסל שלי
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCart, removeFromCart, cartTotal } from "../cart";
@@ -19,7 +18,6 @@ export default function Cart() {
       </button>
       <h1 className="text-2xl font-bold mb-6">הסל שלי</h1>
 
-      {/* הסתעפות א': הסל ריק */}
       {cart.length === 0 ? (
         <div className="bg-yellow-100 text-yellow-800 p-3 rounded max-w-lg">הסל שלך ריק</div>
       ) : (

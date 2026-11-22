@@ -1,4 +1,3 @@
-// SUC-2: התחברות לאפליקציה
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../api";
@@ -16,7 +15,7 @@ export default function Login() {
     try {
       const res = await api.post("/auth/login", { email, password });
       saveAuth(res.data.token, res.data.user);
-      navigate("/");                                  // מעבר לממשק לפי ההרשאה
+      navigate("/");
     } catch (err) {
       setError(err.response?.data?.message || "שגיאה בהתחברות");
     }

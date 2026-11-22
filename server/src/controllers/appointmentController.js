@@ -1,4 +1,3 @@
-// רכיב Appointments Manager - הזמנה, צפייה, שינוי וביטול תור (SUC-3 עד SUC-6)
 const Appointment = require("../models/Appointment");
 const ServiceProvider = require("../models/ServiceProvider");
 const User = require("../models/User");
@@ -6,7 +5,6 @@ const { todayString } = require("../utils/dates");
 const { weeklyOf, hoursForDate } = require("../utils/workSchedule");
 const { sendAppointmentConfirmation } = require("../utils/mailer");
 
-// הופך "09:30" למספר דקות מתחילת היום, וההפך
 function toMinutes(t) {
   const [h, m] = t.split(":").map(Number);
   return h * 60 + m;
@@ -17,7 +15,6 @@ function toTime(minutes) {
   return h + ":" + m;
 }
 
-// האלגוריתם: מחשב את התורים הפנויים מתוך שעות העבודה פחות התורים התפוסים
 function calcFreeSlots(schedule, bookedList) {
   const slots = [];
   const start = toMinutes(schedule.startHour);
@@ -31,15 +28,12 @@ function calcFreeSlots(schedule, bookedList) {
   return slots;
 }
 
-// האם השעה היא אחד התורים ביום העבודה של הספר בתאריך הזה.
-// מונע הזמנה ליום שהספר סימן בינתיים כיום חופש או לשעה שכבר מחוץ לשעות העבודה
 async function isWorkingSlot(barberId, date, time) {
   const barber = await ServiceProvider.findById(barberId);
   const hours = barber && hoursForDate(barber, date);
   return Boolean(hours) && calcFreeSlots(hours, []).includes(time);
 }
 
-// רשימת הספרים במספרה - צעד 1 ב-SUC-3
 async function getBarbers(req, res) {
   const barbers = await ServiceProvider.find().populate("userId", "firstName lastName");
   res.json(barbers.map((b) => ({
@@ -49,17 +43,15 @@ async function getBarbers(req, res) {
   })));
 }
 
-// שעות פנויות לתאריך שנבחר - צעדים 2 ו-3 ב-SUC-3
 async function getFreeSlots(req, res) {
   try {
     const { barberId, date } = req.query;
     const barber = await ServiceProvider.findById(barberId);
     if (!barber) return res.status(404).json({ message: "הספר לא נמצא" });
 
-    // שעות העבודה בתאריך: שינוי לתאריך המסוים אם יש, אחרת היום בסדר השבועי
     const hours = hoursForDate(barber, date);
     if (!hours) {
-      return res.json({ slots: [] });   // הספר לא עובד בתאריך הזה
+      return res.json({ slots: [] });
     }
 
     const booked = await Appointment.find({ barberId, date, status: "booked" });
@@ -70,7 +62,6 @@ async function getFreeSlots(req, res) {
   }
 }
 
-// הזמנת תור - צעדים 4 ו-5 ב-SUC-3
 async function bookAppointment(req, res) {
   try {
     const { barberId, date, time } = req.body;
@@ -81,7 +72,6 @@ async function bookAppointment(req, res) {
       return res.status(400).json({ message: "השעה שנבחרה אינה בשעות העבודה של הספר, יש לבחור שעה אחרת" });
     }
 
-    // בדיקה שהשעה עדיין פנויה (שלא נתפסה בינתיים על ידי לקוח אחר)
     const taken = await Appointment.findOne({ barberId, date, time, status: "booked" });
     if (taken) {
       return res.status(400).json({ message: "התור כבר נתפס, יש לבחור שעה אחרת" });
@@ -89,7 +79,6 @@ async function bookAppointment(req, res) {
 
     await Appointment.create({ clientId: req.user.id, barberId, date, time });
 
-    // צעד 5: שליחת הודעת אישור ללקוח לכתובת הדוא"ל שאיתה נרשם
     const client = await User.findById(req.user.id);
     const provider = await ServiceProvider.findById(barberId).populate("userId", "firstName lastName");
     const barberName = provider && provider.userId
@@ -104,9 +93,7 @@ async function bookAppointment(req, res) {
   }
 }
 
-// התורים של הלקוח המחובר - SUC-4
 async function myAppointments(req, res) {
-  // רק תורים עתידיים: התאריך שמור בתבנית YYYY-MM-DD ולכן אפשר להשוות אותו כמחרוזת
   const today = todayString();
   const list = await Appointment.find({ clientId: req.user.id, status: "booked", date: { $gte: today } })
     .populate({ path: "barberId", populate: { path: "userId", select: "firstName lastName" } })
@@ -122,7 +109,6 @@ async function myAppointments(req, res) {
   })));
 }
 
-// שינוי תור - SUC-5
 async function changeAppointment(req, res) {
   try {
     const { date, time } = req.body;
@@ -138,7 +124,7 @@ async function changeAppointment(req, res) {
     });
     if (taken) return res.status(400).json({ message: "התור כבר נתפס, יש לבחור שעה אחרת" });
 
-    appt.date = date;      // המועד הישן מתפנה אוטומטית לכלל הלקוחות
+    appt.date = date;
     appt.time = time;
     await appt.save();
     res.json({ message: "התור עודכן בהצלחה" });
@@ -147,12 +133,11 @@ async function changeAppointment(req, res) {
   }
 }
 
-// ביטול תור - SUC-6
 async function cancelAppointment(req, res) {
   const appt = await Appointment.findOne({ _id: req.params.id, clientId: req.user.id });
   if (!appt) return res.status(404).json({ message: "התור לא נמצא" });
 
-  appt.status = "cancelled";   // המועד מתפנה לשאר הלקוחות
+  appt.status = "cancelled";
   await appt.save();
   res.json({ message: "התור בוטל בהצלחה" });
 }

@@ -1,6 +1,3 @@
-// בדיקות יחידה לאלגוריתם חישוב התורים הפנויים (סעיף 10 בספר).
-// הפונקציה נבדקת במנותק מהשרת וממסד הנתונים: נכנס לוח עבודה ורשימת
-// תורים תפוסים, יוצאת רשימת השעות הפנויות.
 const test = require("node:test");
 const assert = require("node:assert");
 const { calcFreeSlots } = require("../src/controllers/appointmentController");
@@ -24,7 +21,7 @@ test("תור תפוס אינו מופיע ברשימת התורים הפנויי
 
 test("שעה שאינה נכנסת במלואה לפני שעת הסגירה אינה מוצעת", () => {
   const slots = calcFreeSlots({ startHour: "09:00", endHour: "10:00", slotMinutes: 45 }, []);
-  assert.deepStrictEqual(slots, ["09:00"]);   // 09:45 היה נגמר ב-10:30, אחרי הסגירה
+  assert.deepStrictEqual(slots, ["09:00"]);
 });
 
 test("כשכל השעות תפוסות מוחזרת רשימה ריקה", () => {

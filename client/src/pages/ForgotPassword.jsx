@@ -1,4 +1,3 @@
-// סעיף 6.1.2: המשתמש שוכח את הסיסמה ומבקש קישור לשחזור
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api";

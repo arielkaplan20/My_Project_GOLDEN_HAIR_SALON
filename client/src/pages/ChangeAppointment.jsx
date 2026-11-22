@@ -1,4 +1,3 @@
-// SUC-5: שינוי תור
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
@@ -8,14 +7,13 @@ import DateInput from "../components/DateInput";
 export default function ChangeAppointment() {
   const [list, setList] = useState([]);
   const [loaded, setLoaded] = useState(false);
-  const [selected, setSelected] = useState(null);   // התור שנבחר לשינוי
+  const [selected, setSelected] = useState(null);
   const [date, setDate] = useState("");
   const [slots, setSlots] = useState([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // צעד 2: הצגת רשימת התורים הקיימים של הלקוח
   function loadList() {
     api.get("/appointments/my").then((res) => {
       setList(res.data);
@@ -24,7 +22,6 @@ export default function ChangeAppointment() {
   }
   useEffect(loadList, []);
 
-  // צעד 4: הצגת תורים פנויים בלבד לתאריך החדש
   useEffect(() => {
     if (!selected || !date) { setSlots([]); return; }
     setError(""); setMessage("");
@@ -37,7 +34,6 @@ export default function ChangeAppointment() {
       });
   }, [selected, date]);
 
-  // צעדים 5-7: בחירת שעה, עדכון התור והצגת הודעת אישור
   async function save(time) {
     setError(""); setMessage("");
     try {
@@ -64,7 +60,6 @@ export default function ChangeAppointment() {
       {message && <div className="bg-green-100 text-green-700 p-2 rounded mb-3 max-w-lg">{message}</div>}
       {error && <div className="bg-red-100 text-red-700 p-2 rounded mb-3 max-w-lg">{error}</div>}
 
-      {/* הסתעפות א': לא קיימים תורים עבור הלקוח */}
       {loaded && list.length === 0 && (
         <div className="bg-yellow-100 text-yellow-800 p-3 rounded max-w-lg">אין תורים קיימים</div>
       )}
@@ -76,7 +71,6 @@ export default function ChangeAppointment() {
             <div>שעה: {a.time}</div>
             <div>ספר: {a.barberName}</div>
 
-            {/* צעד 3: לחיצה על כפתור שינוי ובחירת תאריך חדש */}
             {selected?.id !== a.id ? (
               <button onClick={() => { setSelected(a); setDate(""); setError(""); setMessage(""); }}
                       className="mt-2 bg-yellow-600 text-white px-3 py-1 rounded">

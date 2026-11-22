@@ -1,4 +1,3 @@
-// SUC-9 צעדים 1-4: יומן התורים של נותן השירות
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
@@ -8,7 +7,6 @@ export default function Diary() {
   const [loaded, setLoaded] = useState(false);
   const navigate = useNavigate();
 
-  // צעד 2: שליפת התורים שנקבעו לנותן השירות המחובר בלבד
   useEffect(() => {
     api.get("/schedule/diary").then((res) => {
       setList(res.data);
@@ -23,14 +21,12 @@ export default function Diary() {
       </button>
       <h1 className="text-2xl font-bold mb-6">יומן תורים</h1>
 
-      {/* הסתעפות א': לא נקבעו תורים, וממשיכים לצעד 4 */}
       {loaded && list.length === 0 && (
         <div className="bg-yellow-100 text-yellow-800 p-3 rounded max-w-lg mb-4">
           לא נקבעו תורים עדיין
         </div>
       )}
 
-      {/* צעד 3: הצגת פירוט התורים הקיימים */}
       {list.length > 0 && (
         <table className="bg-white rounded shadow mb-4 w-full max-w-lg text-right">
           <thead>
@@ -52,7 +48,6 @@ export default function Diary() {
         </table>
       )}
 
-      {/* צעד 4: מעבר לעריכת ימי ושעות העבודה */}
       <button onClick={() => navigate("/work-hours")}
               className="bg-yellow-600 text-white px-4 py-2 rounded">
         עריכת ימי ושעות עבודה

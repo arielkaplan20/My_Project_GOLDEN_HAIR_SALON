@@ -1,7 +1,5 @@
-// שליחת הודעות דואר אלקטרוני ללקוחות, דרך חשבון Gmail של העסק
 const nodemailer = require("nodemailer");
 
-// אם לא הוגדרו פרטי דואר בקובץ .env, המערכת ממשיכה לעבוד בלי לשלוח מיילים
 function getTransporter() {
   if (!process.env.MAIL_USER || !process.env.MAIL_PASS) {
     return null;
@@ -10,12 +8,11 @@ function getTransporter() {
     service: "gmail",
     auth: {
       user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASS.replace(/\s/g, ""),   // הסיסמה מגוגל מגיעה עם רווחים
+      pass: process.env.MAIL_PASS.replace(/\s/g, ""),
     },
   });
 }
 
-// מעטפת HTML אחידה לכל המיילים של המערכת
 function wrap(title, body) {
   return `
   <div dir="rtl" style="font-family: Arial, sans-serif; background:#f5f5f5; padding:20px;">
@@ -31,7 +28,6 @@ function wrap(title, body) {
   </div>`;
 }
 
-// שליחה בפועל. נכשלת בשקט כדי ששגיאת דואר לא תפיל פעולה שכבר הצליחה
 async function sendMail(to, subject, title, body) {
   const transporter = getTransporter();
   if (!transporter) {
@@ -53,7 +49,6 @@ async function sendMail(to, subject, title, body) {
   }
 }
 
-// מייל אישור על קביעת תור - SUC-3 צעד 5
 function sendAppointmentConfirmation(user, barberName, date, time) {
   return sendMail(user.email, "אישור הזמנת תור - GOLDEN HAIR SALON", `שלום ${user.firstName},`, `
     <p>התור שלך נקבע בהצלחה. אלה הפרטים:</p>
@@ -66,7 +61,6 @@ function sendAppointmentConfirmation(user, barberName, date, time) {
     <p>נתראה,<br>צוות GOLDEN HAIR SALON</p>`);
 }
 
-// מייל שחזור סיסמה - סעיף 6.1.2 בספר
 function sendPasswordReset(user, link) {
   return sendMail(user.email, "שחזור סיסמה - GOLDEN HAIR SALON", `שלום ${user.firstName},`, `
     <p>קיבלנו בקשה לאיפוס הסיסמה שלך. לחיצה על הכפתור תעביר אותך לדף שבו תוכל לבחור סיסמה חדשה:</p>

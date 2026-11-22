@@ -1,4 +1,3 @@
-// סעיף 6.1.2: בחירת סיסמה חדשה מתוך הקישור שהגיע במייל
 import { useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import api from "../api";
@@ -17,7 +16,7 @@ export default function ResetPassword() {
     try {
       const res = await api.post("/auth/reset-password", { token, password, confirmPassword });
       setMessage(res.data.message);
-      setTimeout(() => navigate("/login"), 2000);   // מעבר לדף הכניסה
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
       setError(err.response?.data?.message || "שגיאה בשינוי הסיסמה");
     }

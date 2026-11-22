@@ -1,4 +1,3 @@
-// חיבור למסד הנתונים MongoDB (Atlas)
 const mongoose = require("mongoose");
 
 async function connectDB() {
@@ -7,7 +6,7 @@ async function connectDB() {
     console.log("מחובר למסד הנתונים");
   } catch (err) {
     console.log("שגיאה בחיבור למסד הנתונים:", err.message);
-    process.exit(1); // עוצרים את השרת, אין טעם להמשיך בלי מסד נתונים
+    process.exit(1);
   }
 }
 

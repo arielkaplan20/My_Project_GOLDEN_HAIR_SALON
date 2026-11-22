@@ -21,7 +21,6 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import { getUser } from "./auth";
 
-// דף שמוגן: אם אין משתמש מחובר, חוזרים לדף הכניסה
 function Protected({ children }) {
   return getUser() ? children : <Navigate to="/login" />;
 }

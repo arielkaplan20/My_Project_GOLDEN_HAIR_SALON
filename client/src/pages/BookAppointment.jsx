@@ -1,4 +1,3 @@
-// SUC-3: הזמנת תור
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
@@ -14,12 +13,10 @@ export default function BookAppointment() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // צעד 1: שליפת רשימת הספרים
   useEffect(() => {
     api.get("/appointments/barbers").then((res) => setBarbers(res.data));
   }, []);
 
-  // צעדים 2-3: אחרי בחירת ספר ותאריך, מציגים תורים פנויים בלבד
   useEffect(() => {
     if (!barberId || !date) { setSlots([]); return; }
     setError(""); setMessage("");
@@ -32,7 +29,6 @@ export default function BookAppointment() {
       });
   }, [barberId, date]);
 
-  // צעדים 4-5: בחירת שעה ואישור
   async function book(time) {
     setError(""); setMessage("");
     try {

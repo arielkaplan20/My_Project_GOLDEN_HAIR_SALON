@@ -1,4 +1,3 @@
-// SUC-7 צעדים 3-6: אופן קבלה, פרטי הזמנה, תשלום ואישור
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
@@ -8,8 +7,8 @@ const PICKUP_POINTS = ["סניף אשקלון - הרצל 10", "סניף אשדו
 
 export default function Checkout() {
   const [cart] = useState(getCart());
-  const [step, setStep] = useState(1);          // 1 = פרטי הזמנה, 2 = תשלום, 3 = אישור
-  const [order, setOrder] = useState(null);     // תוצאת ההזמנה: מספר הזמנה וסכום
+  const [step, setStep] = useState(1);
+  const [order, setOrder] = useState(null);
   const [form, setForm] = useState({
     deliveryType: "pickup", fullName: "", phone: "", email: "",
     pickupPoint: PICKUP_POINTS[0], address: "", notes: ""
@@ -25,14 +24,12 @@ export default function Checkout() {
     setCard({ ...card, [e.target.name]: e.target.value });
   }
 
-  // צעדים 3-4: אופן הקבלה ופרטי ההזמנה
   function toPayment(e) {
     e.preventDefault();
     setError("");
     setStep(2);
   }
 
-  // צעדים 5-6: תשלום, שמירת ההזמנה וקבלת מספר הזמנה
   async function pay(e) {
     e.preventDefault();
     setError("");
@@ -42,12 +39,10 @@ export default function Checkout() {
       setOrder(res.data);
       setStep(3);
     } catch (err) {
-      // הסתעפות ב': תשלום נכשל, נשארים בדף התשלום
       setError(err.response?.data?.message || "שגיאה בביצוע ההזמנה");
     }
   }
 
-  // הסתעפות א': אי אפשר להגיע לתשלום עם סל ריק
   if (cart.length === 0 && step !== 3) {
     return (
       <div className="min-h-screen p-6 max-w-5xl mx-auto">
@@ -59,7 +54,6 @@ export default function Checkout() {
     );
   }
 
-  // צעד 6: הודעת אישור כולל מספר הזמנה
   if (step === 3) {
     return (
       <div className="min-h-screen p-6 max-w-5xl mx-auto">
@@ -89,7 +83,6 @@ export default function Checkout() {
 
         {step === 1 ? (
           <form onSubmit={toPayment}>
-            {/* צעד 3: בחירת אופן הקבלה */}
             <label className="block mb-2">אופן קבלה</label>
             <label className="block">
               <input type="radio" name="deliveryType" value="pickup" className="ml-2"
@@ -102,7 +95,6 @@ export default function Checkout() {
               משלוח
             </label>
 
-            {/* צעד 4: פרטי ההזמנה */}
             <label className="block mb-1">שם מלא</label>
             <input name="fullName" value={form.fullName} onChange={change} required
                    className="w-full border rounded p-2 mb-3" />
@@ -140,7 +132,6 @@ export default function Checkout() {
             </button>
           </form>
         ) : (
-          /* צעד 5: דף התשלום */
           <form onSubmit={pay}>
             <h2 className="font-bold mb-3">פרטי תשלום</h2>
 

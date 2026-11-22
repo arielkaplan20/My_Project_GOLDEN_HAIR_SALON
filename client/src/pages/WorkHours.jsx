@@ -1,4 +1,3 @@
-// SUC-9 צעדים 5-8: סדר העבודה השבועי הקבוע, ושינויים לתאריכים מסוימים (הסתעפות ג')
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
@@ -7,7 +6,6 @@ import DateInput from "../components/DateInput";
 
 const DAYS = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
 
-// "2026-10-15" -> "15/10/2026, יום חמישי"
 function formatDate(s) {
   const [y, m, d] = s.split("-").map(Number);
   const day = new Date(y, m - 1, d).getDay();
@@ -26,7 +24,6 @@ export default function WorkHours() {
   const [conflicts, setConflicts] = useState([]);
   const navigate = useNavigate();
 
-  // צעד 5: שליפת סדר העבודה השבועי והשינויים לתאריכים
   function load() {
     api.get("/schedule/me").then((res) => {
       setWeek(res.data.weeklySchedule);
@@ -43,13 +40,11 @@ export default function WorkHours() {
     setMessage(""); setError(""); setConflicts([]);
   }
 
-  // הסתעפויות ד' ו-ה': הודעת השגיאה מהשרת, ורשימת התורים המתנגשים אם יש
   function showError(err, fallback) {
     setError(err.response?.data?.message || fallback);
     setConflicts(err.response?.data?.conflicts || []);
   }
 
-  // צעד 6: שמירת סדר העבודה השבועי. צעדים 7-8 מטופלים בשרת
   async function saveWeek(e) {
     e.preventDefault();
     clearMessages();
@@ -61,7 +56,6 @@ export default function WorkHours() {
     }
   }
 
-  // הסתעפות ג': יום חופש או שעות אחרות לתאריך מסוים
   async function saveException(e) {
     e.preventDefault();
     clearMessages();
@@ -112,10 +106,8 @@ export default function WorkHours() {
         </div>
       )}
 
-      {/* במסך רחב שני החלקים זה לצד זה, ובמסך צר אחד מתחת לשני */}
       <div className="grid lg:grid-cols-2 gap-6 items-start">
 
-      {/* סדר העבודה השבועי הקבוע */}
       <form onSubmit={saveWeek} className="bg-white p-6 rounded shadow">
         <h2 className="text-lg font-bold mb-1">סדר עבודה שבועי</h2>
         <p className="text-gray-600 text-sm mb-4">
@@ -157,7 +149,6 @@ export default function WorkHours() {
         </button>
       </form>
 
-      {/* שינוי לתאריך מסוים */}
       <form onSubmit={saveException} className="bg-white p-6 rounded shadow">
         <h2 className="text-lg font-bold mb-1">שינוי לתאריך מסוים</h2>
         <p className="text-gray-600 text-sm mb-4">

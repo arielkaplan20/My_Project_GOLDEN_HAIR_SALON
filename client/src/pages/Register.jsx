@@ -1,4 +1,3 @@
-// SUC-1: הרשמה לאפליקציה
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../api";
@@ -23,7 +22,7 @@ export default function Register() {
     try {
       await api.post("/auth/register", form);
       setSuccess("ההרשמה בוצעה בהצלחה, מעבירים אותך לדף הכניסה");
-      setTimeout(() => navigate("/login"), 1500);     // צעד 4: מעבר לדף הכניסה
+      setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
       setError(err.response?.data?.message || "שגיאה בהרשמה");
     }

@@ -4,11 +4,11 @@ const { auth } = require("../middleware/auth");
 
 const router = express.Router();
 
-router.post("/register", register);   // SUC-1
-router.post("/login", login);         // SUC-2
+router.post("/register", register);
+router.post("/login", login);
 router.get("/me", auth, me);
-router.put("/me", auth, updateProfile);   // SUC-8
-router.post("/forgot-password", forgotPassword);   // סעיף 6.1.2
+router.put("/me", auth, updateProfile);
+router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
 
 module.exports = router;
